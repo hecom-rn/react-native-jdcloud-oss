@@ -1,14 +1,14 @@
 {
-  "name": "react-native-esdk-obs",
+  "name": "react-native-jdcloud-oss",
   "version": "0.0.1",
-  "description": "React Native SDK for huawei object storage service",
+  "description": "React Native SDK for jdCloud object storage service",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/hecom-rn/react-native-esdk-obs.git"
+    "url": "git+https://github.com/hecom-rn/react-native-jdcloud-oss.git"
   },
   "keywords": [
     "obs",
@@ -17,7 +17,7 @@
   ],
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/hecom-rn/react-native-esdk-obs/issues"
+    "url": "https://github.com/hecom-rn/react-native-jdcloud-oss/issues"
   },
-  "homepage": "https://github.com/hecom-rn/react-native-esdk-obs.git#readme"
+  "homepage": "https://github.com/hecom-rn/react-native-jdcloud-oss.git#readme"
 }
