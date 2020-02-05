@@ -4,7 +4,9 @@ import android.content.Context;
 
 import com.amazonaws.ClientConfiguration;
 import com.amazonaws.SDKGlobalConfiguration;
+import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.BasicAWSCredentials;
+import com.amazonaws.auth.BasicSessionCredentials;
 import com.amazonaws.auth.SignerFactory;
 import com.amazonaws.internal.StaticCredentialsProvider;
 import com.amazonaws.services.s3.AmazonS3Client;
@@ -50,9 +52,8 @@ public class OssAuthManager {
         System.setProperty(SDKGlobalConfiguration.ENABLE_S3_SIGV4_SYSTEM_PROPERTY, "true");
         ClientConfiguration config = ConfigUtils.initAuthConfig(configuration);
         config.setSignerOverride("JdAWSS3V4Signer");
-        BasicAWSCredentials credentials = new BasicAWSCredentials(accessKeyId, accessKeySecret);
+        AWSCredentials credentials = new BasicAWSCredentials(accessKeyId, accessKeySecret);
         StaticCredentialsProvider credProvider = new StaticCredentialsProvider(credentials);
-
         mClient = new AmazonS3Client(credProvider, config);
         mClient.setEndpoint(endPoint);
         S3ClientOptions options = S3ClientOptions.builder()
@@ -78,6 +79,21 @@ public class OssAuthManager {
                                       String accessKeySecret,
                                       String endPoint,
                                       ReadableMap configuration) {
-        initWithPlainTextAccessKey(accessKeyId, accessKeySecret, endPoint, configuration);
+        SignerFactory.registerSigner("JdAWSS3V4Signer", JdAWSS3V4Signer.class);
+        System.setProperty(SDKGlobalConfiguration.ENABLE_S3_SIGV4_SYSTEM_PROPERTY, "true");
+        ClientConfiguration config = ConfigUtils.initAuthConfig(configuration);
+        config.setSignerOverride("JdAWSS3V4Signer");
+        AWSCredentials credentials = new BasicSessionCredentials(accessKeyId, accessKeySecret, securityToken);
+        StaticCredentialsProvider credProvider = new StaticCredentialsProvider(credentials);
+        mClient = new AmazonS3Client(credProvider, config);
+        mClient.setEndpoint(endPoint);
+        S3ClientOptions options = S3ClientOptions.builder()
+                .disableChunkedEncoding()
+                .setPayloadSigningEnabled(true)
+                .build();
+        mClient.setS3ClientOptions(options);
+
+        // init conf
+        mAuthListener.onAuthFinished(mClient);
     }
 }
