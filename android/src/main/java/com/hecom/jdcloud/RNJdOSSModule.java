@@ -10,16 +10,16 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
 
-public class RNObsModule extends ReactContextBaseJavaModule {
+public class RNJdOSSModule extends ReactContextBaseJavaModule {
 
     private AmazonS3Client mClient;
     private OssUploadManager mUploadManager;
     private OssAuthManager mAuth;
 
     /**
-     * RNObsModule constructor
+     * RNJdOSSModule constructor
      */
-    public RNObsModule(final ReactApplicationContext reactContext) {
+    public RNJdOSSModule(final ReactApplicationContext reactContext) {
         super(reactContext);
         mAuth = new OssAuthManager(reactContext.getApplicationContext(), new OssAuthManager.AuthListener() {
             @Override
@@ -31,7 +31,7 @@ public class RNObsModule extends ReactContextBaseJavaModule {
 
     @Override
     public String getName() {
-        return "RNOBS";
+        return "JDOSS";
     }
 
 

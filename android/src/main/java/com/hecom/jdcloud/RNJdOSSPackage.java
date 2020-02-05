@@ -10,10 +10,10 @@ import com.facebook.react.uimanager.ViewManager;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-public class RNObsPackage implements ReactPackage {
+public class RNJdOSSPackage implements ReactPackage {
     @Override
     public List<NativeModule> createNativeModules(ReactApplicationContext reactContext) {
-      return Arrays.<NativeModule>asList(new RNObsModule(reactContext));
+      return Arrays.<NativeModule>asList(new RNJdOSSModule(reactContext));
     }
 
     public List<Class<? extends JavaScriptModule>> createJSModules() {
