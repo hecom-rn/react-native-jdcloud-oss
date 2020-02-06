@@ -25,7 +25,7 @@ pod 'react-native-jdcloud-oss', :path => '../node_modules/react-native-jdcloud-o
 1. `settings.gradle`
     ```gradle
     include ':react-native-jdcloud-oss'
-    project(':react-native-jdcloud-osss').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-jdcloud-oss/android')
+    project(':react-native-jdcloud-oss').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-jdcloud-oss/android')
     ```
 2. `build.gradle`
     ```gradle
@@ -36,14 +36,14 @@ pod 'react-native-jdcloud-oss', :path => '../node_modules/react-native-jdcloud-o
 
 3. `MainApplication.java`
     ```java
-   import com.hecom.jdcloud.RNOssPackage;
+   import com.hecom.jdcloud.RNJdOSSPackage;
 
     public class MainApplication extends Application implements ReactApplication {
      @Override
        protected List<ReactPackage> getPackages() {
          return Arrays.<ReactPackage>asList(
              new MainReactPackage(),
-             new RNOssPackage()
+             new RNJdOSSPackage()
          );
        }
     }
