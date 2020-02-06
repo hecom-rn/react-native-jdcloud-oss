@@ -8,7 +8,6 @@ import android.util.Log;
 
 import com.amazonaws.event.ProgressEvent;
 import com.amazonaws.event.ProgressListener;
-import com.amazonaws.mobileconnectors.s3.transferutility.TransferUtility;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
@@ -26,17 +25,12 @@ import java.io.File;
 public class OssUploadManager {
 
     private AmazonS3Client mClient;
-    private TransferUtility mTransferUtility;
 
     /**
      * OssUploadManager contructor
      */
     public OssUploadManager(Context context, AmazonS3Client obs) {
         mClient = obs;
-        mTransferUtility = TransferUtility.builder()
-                .context(context)
-                .s3Client(obs)
-                .build();
     }
 
     /**
