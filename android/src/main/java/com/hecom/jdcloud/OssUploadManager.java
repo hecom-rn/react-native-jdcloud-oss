@@ -6,12 +6,12 @@ import android.net.Uri;
 import android.provider.MediaStore;
 import android.util.Log;
 
-import com.amazonaws.event.ProgressEvent;
-import com.amazonaws.event.ProgressListener;
+import com.amazonaws.mobileconnectors.s3.transferutility.TransferListener;
+import com.amazonaws.mobileconnectors.s3.transferutility.TransferState;
+import com.amazonaws.mobileconnectors.s3.transferutility.TransferUtility;
 import com.amazonaws.services.s3.AmazonS3Client;
+import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.ObjectMetadata;
-import com.amazonaws.services.s3.model.PutObjectRequest;
-import com.amazonaws.services.s3.model.PutObjectResult;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactContext;
@@ -25,12 +25,17 @@ import java.io.File;
 public class OssUploadManager {
 
     private AmazonS3Client mClient;
+    private TransferUtility mTransferUtility;
 
     /**
      * OssUploadManager contructor
      */
     public OssUploadManager(Context context, AmazonS3Client obs) {
         mClient = obs;
+        mTransferUtility = TransferUtility.builder()
+                .context(context.getApplicationContext())
+                .s3Client(mClient)
+                .build();
     }
 
     /**
@@ -63,37 +68,37 @@ public class OssUploadManager {
         }
         // init upload request
         final File source = new File(sourceFile);
-        PutObjectRequest put = new PutObjectRequest(bucketName, ossFile, source);
         ObjectMetadata metadata = new ObjectMetadata();
         metadata.setContentType("application/octet-stream");
-        put.setMetadata(metadata);
+        mTransferUtility.upload(bucketName, ossFile, source, metadata,
+                CannedAccessControlList.PublicRead, new TransferListener() {
 
-        // set callback
-        put.setGeneralProgressListener(new ProgressListener() {
-            @Override
-            public void progressChanged(ProgressEvent progressEvent) {
-                long currentSize = progressEvent.getBytesTransferred();
-                long totalSize = source.length();
-                Log.d("PutObject", "currentSize: " + currentSize + " totalSize: " + totalSize);
-                String str_currentSize = Long.toString(currentSize);
-                String str_totalSize = Long.toString(totalSize);
-                WritableMap onProgressValueData = Arguments.createMap();
-                onProgressValueData.putString("path", ossFile);
-                onProgressValueData.putString("currentSize", str_currentSize);
-                onProgressValueData.putString("totalSize", str_totalSize);
-                context.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
-                        .emit("uploadProgress", onProgressValueData);
-            }
-        });
-        try {
-            PutObjectResult result = mClient.putObject(put);
-            Log.d("PutObject", "UploadSuccess");
-            Log.d("ETag", result.getETag());
-            promise.resolve("UploadSuccess");
-        } catch (Exception e) {
-            e.printStackTrace();
-            promise.reject(e);
-        }
-        Log.d("AliyunOSS", "OSS uploadObjectAsync ok!");
+                    @Override
+                    public void onStateChanged(int id, TransferState state) {
+                        if (state == TransferState.COMPLETED) {
+                            Log.d("PutObject", "UploadSuccess");
+                            promise.resolve("UploadSuccess");
+                        }
+                    }
+
+                    @Override
+                    public void onProgressChanged(int id, long bytesCurrent, long bytesTotal) {
+                        Log.d("PutObject", "currentSize: " + bytesCurrent + " totalSize: " + bytesTotal);
+                        String str_currentSize = Long.toString(bytesCurrent);
+                        String str_totalSize = Long.toString(bytesTotal);
+                        WritableMap onProgressValueData = Arguments.createMap();
+                        onProgressValueData.putString("path", ossFile);
+                        onProgressValueData.putString("currentSize", str_currentSize);
+                        onProgressValueData.putString("totalSize", str_totalSize);
+                        context.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+                                .emit("uploadProgress", onProgressValueData);
+                    }
+
+                    @Override
+                    public void onError(int id, Exception ex) {
+                        ex.printStackTrace();
+                        promise.reject(ex);
+                    }
+                });
     }
 }
