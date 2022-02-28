@@ -35,6 +35,7 @@ RCT_REMAP_METHOD(upload,
             NSLog(@"%lld, %lld, %lld", bytesSent, totalBytesSent, totalBytesExpectedToSend);
             if (self.hasListeners) {
                 [self sendEventWithName:@"uploadProgress" body:@{
+                    @"filePath": filepath,
                     @"currentSize": [NSString stringWithFormat:@"%lld",totalBytesSent],
                     @"totalSize": [NSString stringWithFormat:@"%lld",totalBytesExpectedToSend]}];
             }
